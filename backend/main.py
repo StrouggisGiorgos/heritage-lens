@@ -3,7 +3,7 @@ import pandas as pd
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-import ollama
+from ollama import Client
 
 app = FastAPI(title="HeritageLens API Engine")
 
@@ -15,12 +15,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+client = Client(host="https://ollama.ontovisual.dev/")
+
 print("Loading MET Museum Database into memory...")
 df = pd.read_csv('MetObjects.csv').drop(["State","County","Object Number","Gallery Number","Object ID","Metadata Date","Artist Gender","Artist Display Bio","Credit Line","Tags Wikidata URL","Tags AAT URL","Repository","Object Wikidata URL","Link Resource","Rights and Reproduction","Object Begin Date","Object End Date","Artist Wikidata URL","Artist ULAN URL","Artist Begin Date","Artist End Date","Artist Alpha Sort","Artist Prefix","Artist Suffix"], axis=1, errors='ignore')
 print(f"Database Loaded! Row count: {len(df)}")
 
 def ai_call(chat):
-    response = ollama.chat(
+    # 3. Use client.chat instead of ollama.chat
+    response = client.chat(
         model="llama3.1",
         messages=[{"role": "user", "content": chat}],
         options={
