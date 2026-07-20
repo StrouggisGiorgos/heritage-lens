@@ -23,7 +23,7 @@ print(f"Database Loaded! Row count: {len(df)}")
 
 def ai_call(chat):
     response = client.chat(
-        model="openai/gpt-oss-20b",
+        model="gpt-oss:20b",
         messages=[{"role": "user", "content": chat}],
         options={
             "temperature": 0.1,
