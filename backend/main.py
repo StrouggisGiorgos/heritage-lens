@@ -1,13 +1,9 @@
-import os
 import re
-import time
 import pandas as pd
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from groq import Groq
-
-client = Groq(api_key=os.getenv("GROQ_API_KEY", "YOUR_KEY_HERE"))
+import ollama
 
 app = FastAPI(title="HeritageLens API Engine")
 
@@ -24,15 +20,15 @@ df = pd.read_csv('MetObjects.csv').drop(["State","County","Object Number","Galle
 print(f"Database Loaded! Row count: {len(df)}")
 
 def ai_call(chat):
-    completion = client.chat.completions.create(
-        model="llama-3.1-8b-instant",
+    response = ollama.chat(
+        model="llama3.1",
         messages=[{"role": "user", "content": chat}],
-        temperature=0.1,
-        max_completion_tokens=1024,
-        stream=False,
+        options={
+            "temperature": 0.1,
+            "num_predict": 1024 
+        }
     )
-    raw_text_output = completion.choices[0].message.content
-    time.sleep(2)
+    raw_text_output = response['message']['content']
     return raw_text_output
 
 class Archivist:
