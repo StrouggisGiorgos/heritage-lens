@@ -22,9 +22,8 @@ df = pd.read_csv('MetObjects.csv').drop(["State","County","Object Number","Galle
 print(f"Database Loaded! Row count: {len(df)}")
 
 def ai_call(chat):
-    # 3. Use client.chat instead of ollama.chat
     response = client.chat(
-        model="llama3.1",
+        model="openai/gpt-oss-20b",
         messages=[{"role": "user", "content": chat}],
         options={
             "temperature": 0.1,
