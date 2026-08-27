@@ -1,9 +1,13 @@
+import os
 import re
+import time
 import pandas as pd
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
-from ollama import Client
+from groq import Groq
+
+client = Groq(api_key=os.getenv("GROQ_API_KEY", "YOUR_KEY_HERE"))
 
 app = FastAPI(title="HeritageLens API Engine")
 
@@ -15,22 +19,20 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-client = Client(host="https://ollama.ontovisual.dev/")
-
 print("Loading MET Museum Database into memory...")
 df = pd.read_csv('MetObjects.csv').drop(["State","County","Object Number","Gallery Number","Object ID","Metadata Date","Artist Gender","Artist Display Bio","Credit Line","Tags Wikidata URL","Tags AAT URL","Repository","Object Wikidata URL","Link Resource","Rights and Reproduction","Object Begin Date","Object End Date","Artist Wikidata URL","Artist ULAN URL","Artist Begin Date","Artist End Date","Artist Alpha Sort","Artist Prefix","Artist Suffix"], axis=1, errors='ignore')
 print(f"Database Loaded! Row count: {len(df)}")
 
 def ai_call(chat):
-    response = client.chat(
-        model="gpt-oss:20b",
+    completion = client.chat.completions.create(
+        model="openai/gpt-oss-120b",
         messages=[{"role": "user", "content": chat}],
-        options={
-            "temperature": 0.1,
-            "num_predict": 1024 
-        }
+        temperature=0.1,
+        max_completion_tokens=1024,
+        stream=False,
     )
-    raw_text_output = response['message']['content']
+    raw_text_output = completion.choices[0].message.content
+    time.sleep(2)
     return raw_text_output
 
 class Archivist:
