@@ -6,7 +6,7 @@
 
 ## Dataset
 
-* The dataset used belongs to the [Metropolitan Art Museum (MET)](https://github.com/metmuseum/openaccess).
+* The dataset used belongs to the [Metropolitan Museum of Art (MET)](https://github.com/metmuseum/openaccess).
 
 ## Agents
 
